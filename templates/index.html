@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Sense Pro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="privacy-banner">
+        🔒 Privacy Notice: All video processing occurs locally on your device. No images are saved or transmitted.
+    </div>
+    
+    <div class="container">
+        <header>
+            <h1>Face Sense Pro</h1>
+            <button id="theme-toggle">🌓 Toggle Theme</button>
+        </header>
+
+        <div class="layout">
+            <div class="video-section">
+                <div class="video-card">
+                    <img src="{{ url_for('video_feed') }}" alt="Live Feed" />
+                </div>
+                <div class="controls">
+                    <label for="threshold">Confidence Threshold: <span id="threshold-val">0%</span></label>
+                    <input type="range" id="threshold" min="0" max="100" value="0" onchange="updateThreshold(this.value)" oninput="document.getElementById('threshold-val').innerText = this.value + '%'">
+                </div>
+            </div>
+
+            <div class="dashboard">
+                <h3>Live Session Analytics</h3>
+                <canvas id="emotionChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Theme Toggle Logic
+        const toggleBtn = document.getElementById('theme-toggle');
+        toggleBtn.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            document.documentElement.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
+        });
+
+        // 2. Send Slider Value to Python Backend
+        function updateThreshold(val) {
+            fetch('/set_threshold', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({threshold: val})
+            });
+        }
+
+        // 3. Initialize Chart.js Doughnut Chart
+        const ctx = document.getElementById('emotionChart').getContext('2d');
+        const emotionChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Angry', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral'],
+                datasets: [{
+                    data: [0, 0, 0, 0, 0, 0, 0],
+                    backgroundColor: ['#ef4444', '#10b981', '#8b5cf6', '#eab308', '#3b82f6', '#f97316', '#94a3b8'],
+                    borderWidth: 0
+                }]
+            },
+            options: { 
+                responsive: true, 
+                color: '#94a3b8',
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+
+        // 4. Poll Python Backend for new Chart Data every 2 seconds
+        setInterval(() => {
+            fetch('/emotion_data')
+                .then(response => response.json())
+                .then(data => {
+                    emotionChart.data.datasets[0].data = [
+                        data.Angry, data.Disgust, data.Fear, data.Happy, data.Sad, data.Surprise, data.Neutral
+                    ];
+                    emotionChart.update();
+                });
+        }, 2000);
+    </script>
+</body>
+</html>

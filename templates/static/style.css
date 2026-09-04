@@ -1,0 +1,136 @@
+:root[data-theme="dark"] {
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+}
+
+:root[data-theme="light"] {
+    --bg-color: #f8fafc;
+    --card-bg: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #cbd5e1;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+    background: var(--bg-color);
+    color: var(--text-main);
+    transition: background-color 0.3s, color 0.3s;
+    min-height: 100vh;
+}
+
+.privacy-banner {
+    background: #10b981;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 30px 20px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    color: #38bdf8;
+    font-size: 1.8rem;
+}
+
+#theme-toggle {
+    background: var(--card-bg);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+#theme-toggle:hover {
+    filter: brightness(1.1);
+}
+
+.layout {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.video-section {
+    flex: 2;
+    min-width: 320px;
+}
+
+.dashboard {
+    flex: 1;
+    min-width: 300px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dashboard h3 {
+    margin-bottom: 20px;
+    color: var(--text-muted);
+}
+
+.video-card {
+    background: #000;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.video-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.controls {
+    margin-top: 20px;
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+}
+
+.controls label {
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+#threshold-val {
+    color: #38bdf8;
+}
+
+input[type="range"] {
+    width: 100%;
+    margin-top: 15px;
+    cursor: pointer;
+}
