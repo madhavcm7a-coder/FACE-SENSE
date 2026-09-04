@@ -2,86 +2,97 @@
 <html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Face Sense Pro</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        html[data-theme="dark"] {
+            --bg-main: #0f172a; --card-bg: #1e293b; --card-border: #334155;
+            --text-primary: #f8fafc; --text-secondary: #94a3b8;
+            --accent: #38bdf8; --btn-bg: #334155; --btn-border: #475569;
+        }
+        html[data-theme="light"] {
+            --bg-main: #f1f5f9; --card-bg: #ffffff; --card-border: #e2e8f0;
+            --text-primary: #0f172a; --text-secondary: #64748b;
+            --accent: #0284c7; --btn-bg: #f8fafc; --btn-border: #cbd5e1;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; transition: 0.3s; }
+        body { background-color: var(--bg-main); color: var(--text-primary); min-height: 100vh; }
+        .privacy-banner { background: #059669; color: #fff; text-align: center; padding: 10px; font-weight: bold; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        header h1 { color: var(--accent); }
+        .header-btns button, .header-btns a {
+            background: var(--btn-bg); color: var(--text-primary); border: 1px solid var(--btn-border);
+            padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 14px; margin-left: 10px;
+        }
+        .layout { display: flex; gap: 24px; flex-wrap: wrap; }
+        .video-section { flex: 1.8; min-width: 320px; }
+        .dashboard { flex: 1.2; min-width: 300px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; align-items: center; }
+        .video-card { background: #000; border-radius: 16px; overflow: hidden; border: 1px solid var(--card-border); aspect-ratio: 4/3; }
+        .video-card img { width: 100%; height: 100%; object-fit: cover; }
+        .controls { margin-top: 20px; background: var(--card-bg); padding: 20px; border-radius: 16px; border: 1px solid var(--card-border); }
+        #threshold-val { color: var(--accent); font-weight: bold; }
+        input[type="range"] { width: 100%; margin-top: 15px; cursor: pointer; }
+        #reset-btn { margin-top: 20px; background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        #reset-btn:hover { background: #dc2626; }
+    </style>
 </head>
 <body>
-    <div class="privacy-banner">
-        🔒 Privacy Notice: All video processing occurs locally on your device. No images are saved or transmitted.
-    </div>
-    
+    <div class="privacy-banner">🔒 Processing locally. No data saved.</div>
     <div class="container">
         <header>
             <h1>Face Sense Pro</h1>
-            <button id="theme-toggle">🌓 Toggle Theme</button>
+            <div class="header-btns">
+                <button id="theme-toggle">🌓 Theme</button>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </div>
         </header>
-
         <div class="layout">
             <div class="video-section">
-                <div class="video-card">
-                    <img src="{{ url_for('video_feed') }}" alt="Live Feed" />
-                </div>
+                <div class="video-card"><img src="{{ url_for('video_feed') }}" /></div>
                 <div class="controls">
-                    <label for="threshold">Confidence Threshold: <span id="threshold-val">0%</span></label>
+                    <label>Confidence: <span id="threshold-val">0%</span></label>
                     <input type="range" id="threshold" min="0" max="100" value="0" onchange="updateThreshold(this.value)" oninput="document.getElementById('threshold-val').innerText = this.value + '%'">
                 </div>
             </div>
-
             <div class="dashboard">
-                <h3>Live Session Analytics</h3>
+                <h3 style="color: var(--text-secondary); margin-bottom: 15px;">Live Analytics</h3>
                 <canvas id="emotionChart"></canvas>
+                <button id="reset-btn" onclick="resetChart()">Reset Data</button>
             </div>
         </div>
     </div>
-
     <script>
-        // 1. Theme Toggle Logic
-        const toggleBtn = document.getElementById('theme-toggle');
-        toggleBtn.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            document.documentElement.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            const html = document.documentElement;
+            html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
         });
-
-        // 2. Send Slider Value to Python Backend
         function updateThreshold(val) {
-            fetch('/set_threshold', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({threshold: val})
+            fetch('/set_threshold', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({threshold: val}) });
+        }
+        function resetChart() {
+            fetch('/reset_data', { method: 'POST' }).then(() => {
+                emotionChart.data.datasets[0].data = [0, 0, 0, 0, 0, 0, 0];
+                emotionChart.update();
             });
         }
-
-        // 3. Initialize Chart.js Doughnut Chart
         const ctx = document.getElementById('emotionChart').getContext('2d');
         const emotionChart = new Chart(ctx, {
             type: 'doughnut',
             data: {
                 labels: ['Angry', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral'],
-                datasets: [{
-                    data: [0, 0, 0, 0, 0, 0, 0],
-                    backgroundColor: ['#ef4444', '#10b981', '#8b5cf6', '#eab308', '#3b82f6', '#f97316', '#94a3b8'],
-                    borderWidth: 0
-                }]
+                datasets: [{ data: [0, 0, 0, 0, 0, 0, 0], backgroundColor: ['#ef4444', '#10b981', '#8b5cf6', '#eab308', '#3b82f6', '#f97316', '#94a3b8'], borderWidth: 0 }]
             },
-            options: { 
-                responsive: true, 
-                color: '#94a3b8',
-                plugins: { legend: { position: 'bottom' } }
-            }
+            options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } } }
         });
-
-        // 4. Poll Python Backend for new Chart Data every 2 seconds
         setInterval(() => {
-            fetch('/emotion_data')
-                .then(response => response.json())
-                .then(data => {
-                    emotionChart.data.datasets[0].data = [
-                        data.Angry, data.Disgust, data.Fear, data.Happy, data.Sad, data.Surprise, data.Neutral
-                    ];
+            fetch('/emotion_data').then(r => r.json()).then(data => {
+                const total = Object.values(data).reduce((a, b) => a + b, 0);
+                if (total > 0) {
+                    emotionChart.data.datasets[0].data = [data.Angry, data.Disgust, data.Fear, data.Happy, data.Sad, data.Surprise, data.Neutral];
                     emotionChart.update();
-                });
+                }
+            }).catch(() => {});
         }, 2000);
     </script>
 </body>
