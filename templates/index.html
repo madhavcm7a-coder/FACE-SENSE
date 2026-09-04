@@ -2,98 +2,865 @@
 <html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Face Sense Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         html[data-theme="dark"] {
-            --bg-main: #0f172a; --card-bg: #1e293b; --card-border: #334155;
-            --text-primary: #f8fafc; --text-secondary: #94a3b8;
-            --accent: #38bdf8; --btn-bg: #334155; --btn-border: #475569;
+            --bg-base: #0a0f1d;
+            --bg-glow-1: rgba(56, 189, 248, 0.12);
+            --bg-glow-2: rgba(99, 102, 241, 0.10);
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #38bdf8;
+            --btn-bg: rgba(51, 65, 85, 0.8);
+            --btn-border: rgba(255, 255, 255, 0.12);
+            --grid-line: rgba(255, 255, 255, 0.03);
+            --stat-box-bg: rgba(0, 0, 0, 0.25);
         }
+
         html[data-theme="light"] {
-            --bg-main: #f1f5f9; --card-bg: #ffffff; --card-border: #e2e8f0;
-            --text-primary: #0f172a; --text-secondary: #64748b;
-            --accent: #0284c7; --btn-bg: #f8fafc; --btn-border: #cbd5e1;
+            --bg-base: #f8fafc;
+            --bg-glow-1: rgba(56, 189, 248, 0.18);
+            --bg-glow-2: rgba(168, 85, 247, 0.12);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(0, 0, 0, 0.08);
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --accent: #0284c7;
+            --btn-bg: rgba(241, 245, 249, 0.9);
+            --btn-border: rgba(0, 0, 0, 0.1);
+            --grid-line: rgba(0, 0, 0, 0.04);
+            --stat-box-bg: rgba(0, 0, 0, 0.04);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; transition: 0.3s; }
-        body { background-color: var(--bg-main); color: var(--text-primary); min-height: 100vh; }
-        .privacy-banner { background: #059669; color: #fff; text-align: center; padding: 10px; font-weight: bold; }
-        .container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        header h1 { color: var(--accent); }
-        .header-btns button, .header-btns a {
-            background: var(--btn-bg); color: var(--text-primary); border: 1px solid var(--btn-border);
-            padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 14px; margin-left: 10px;
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            transition: background-color 0.25s, color 0.25s, border-color 0.25s;
         }
-        .layout { display: flex; gap: 24px; flex-wrap: wrap; }
-        .video-section { flex: 1.8; min-width: 320px; }
-        .dashboard { flex: 1.2; min-width: 300px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; align-items: center; }
-        .video-card { background: #000; border-radius: 16px; overflow: hidden; border: 1px solid var(--card-border); aspect-ratio: 4/3; }
-        .video-card img { width: 100%; height: 100%; object-fit: cover; }
-        .controls { margin-top: 20px; background: var(--card-bg); padding: 20px; border-radius: 16px; border: 1px solid var(--card-border); }
-        #threshold-val { color: var(--accent); font-weight: bold; }
-        input[type="range"] { width: 100%; margin-top: 15px; cursor: pointer; }
-        #reset-btn { margin-top: 20px; background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        #reset-btn:hover { background: #dc2626; }
+
+        body {
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(circle at 15% 20%, var(--bg-glow-1) 0%, transparent 40%),
+                radial-gradient(circle at 85% 60%, var(--bg-glow-2) 0%, transparent 45%),
+                linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .privacy-banner {
+            background: linear-gradient(90deg, #059669, #10b981);
+            color: #ffffff;
+            text-align: center;
+            padding: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            color: var(--accent);
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        .header-btns {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-btns select, .header-btns button, .header-btns a {
+            background: var(--btn-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--btn-border);
+            backdrop-filter: blur(8px);
+            padding: 8px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .mode-nav {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 12px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1.5px solid var(--card-border);
+            color: var(--text-primary);
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .mode-btn.active {
+            border-color: var(--accent);
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+        }
+
+        .layout {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .video-section {
+            flex: 1.6;
+            min-width: 320px;
+        }
+
+        .dashboard, .controls, .pomodoro-panel, .timeline-card, .lofi-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .dashboard {
+            flex: 1.4;
+            min-width: 320px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .video-card {
+            background: #000;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+            aspect-ratio: 4/3;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .video-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .controls, .pomodoro-panel, .lofi-card {
+            margin-top: 16px;
+            padding: 16px 20px;
+        }
+
+        .controls label, .lofi-card label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        #threshold-val {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .audio-bar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .audio-bar select, .lofi-card select {
+            background: var(--btn-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--btn-border);
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        .lofi-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .lofi-play-btn {
+            background: var(--accent);
+            color: #0f172a;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .pomo-timer {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: 1px;
+        }
+
+        .pomo-panel-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pomo-btns button {
+            background: var(--btn-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--btn-border);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            margin-left: 6px;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            margin-top: 16px;
+        }
+
+        .action-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #ffffff;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.82rem;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .action-btn.secondary {
+            background: var(--btn-bg);
+            border: 1px solid var(--btn-border);
+            color: var(--text-primary);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 16px;
+        }
+
+        .stat-box {
+            background: var(--stat-box-bg);
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid var(--card-border);
+            text-align: center;
+        }
+
+        .stat-box span {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .stat-box strong {
+            font-size: 1.1rem;
+            color: var(--accent);
+        }
+
+        .timeline-card {
+            width: 100%;
+            margin-top: 16px;
+            padding: 16px;
+        }
     </style>
 </head>
 <body>
-    <div class="privacy-banner">🔒 Processing locally. No data saved.</div>
+    <div class="privacy-banner">🔒 Privacy Notice: All video processing occurs locally on your device. No video or biometric data is saved online.</div>
     <div class="container">
         <header>
             <h1>Face Sense Pro</h1>
             <div class="header-btns">
+                <select id="camera-select" onchange="switchCameraInput(this.value)">
+                    <option value="0">Camera 0 (Default)</option>
+                    <option value="1">Camera 1 (External/USB)</option>
+                    <option value="2">Camera 2 (Secondary)</option>
+                </select>
                 <button id="theme-toggle">🌓 Theme</button>
-                <a href="{{ url_for('logout') }}">Logout</a>
+                <a href="{{ url_for('logout') }}">Logout ({{ username }})</a>
             </div>
         </header>
+
+        <div class="mode-nav">
+            <button class="mode-btn active" id="btn-emotion" onclick="switchMode('emotion')">🎭 Emotion Dashboard</button>
+            <button class="mode-btn" id="btn-study" onclick="switchMode('study')">🎯 Study / Focus Mode</button>
+        </div>
+
         <div class="layout">
             <div class="video-section">
-                <div class="video-card"><img src="{{ url_for('video_feed') }}" /></div>
+                <div class="video-card"><img src="{{ url_for('video_feed') }}" alt="Live Camera Feed" /></div>
+                
                 <div class="controls">
-                    <label>Confidence: <span id="threshold-val">0%</span></label>
-                    <input type="range" id="threshold" min="0" max="100" value="0" onchange="updateThreshold(this.value)" oninput="document.getElementById('threshold-val').innerText = this.value + '%'">
+                    <!-- Emotion Slider -->
+                    <div id="emotion-controls">
+                        <label for="threshold">Confidence Threshold: <span id="threshold-val">0%</span></label>
+                        <input type="range" id="threshold" min="0" max="100" value="0" onchange="updateThreshold(this.value)" oninput="document.getElementById('threshold-val').innerText = this.value + '%'">
+                    </div>
+
+                    <!-- Alert Audio Control Bar -->
+                    <div class="audio-bar">
+                        <label style="margin: 0;">Alert Tone:</label>
+                        <select id="tone-select">
+                            <option value="chime">Chime (High)</option>
+                            <option value="beep">Beep (Standard)</option>
+                            <option value="pulse">Pulse (Low)</option>
+                        </select>
+                        <label style="margin: 0 0 0 10px;">Alert Vol:</label>
+                        <input type="range" id="audio-volume" min="0" max="100" value="30" style="flex: 1;" oninput="updateAudioVol(this.value)">
+                        <button onclick="toggleAudioMute()" id="mute-btn" style="padding: 4px 8px; border-radius: 6px; border: 1px solid var(--btn-border); background: var(--btn-bg); color: var(--text-primary); cursor: pointer; font-size: 11px;">Mute</button>
+                    </div>
+                </div>
+
+                <!-- IDEA 4: Study Beats & Ambient Noise Player -->
+                <div class="lofi-card" id="lofi-player-box" style="display: none;">
+                    <label>🎧 Focus Audio & Lofi Atmosphere <span id="audio-status-tag" style="color: var(--accent); font-weight: normal;">Idle</span></label>
+                    <div class="lofi-controls">
+                        <select id="ambient-mode-select" onchange="changeAmbientSound(this.value)">
+                            <option value="brown">Brown Noise (Deep Focus)</option>
+                            <option value="binaural">40Hz Binaural Concentration</option>
+                            <option value="rain">White Noise / Soft Rain</option>
+                            <option value="lofi">Lofi Chill Radio Stream</option>
+                        </select>
+                        <button class="lofi-play-btn" id="lofi-toggle-btn" onclick="toggleAmbientAudio()">Play Music</button>
+                        <input type="range" id="ambient-vol" min="0" max="100" value="25" title="Music Volume" style="width: 100px;" oninput="updateAmbientVolume(this.value)">
+                    </div>
+                </div>
+
+                <div class="pomodoro-panel" id="study-pomo" style="display: none;">
+                    <div class="pomo-panel-inner">
+                        <div>
+                            <span id="pomo-status" style="font-size: 0.8rem; color: var(--text-secondary); display: block; font-weight: 600;">FOCUS CYCLE (25m)</span>
+                            <div class="pomo-timer" id="pomo-clock">25:00</div>
+                        </div>
+                        <div class="pomo-btns">
+                            <button onclick="togglePomodoro()" id="pomo-play-btn">Start</button>
+                            <button onclick="resetPomodoro()">Reset</button>
+                            <button onclick="calibratePosture()">Calibrate Seat</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="dashboard">
-                <h3 style="color: var(--text-secondary); margin-bottom: 15px;">Live Analytics</h3>
+
+            <!-- Emotion Panel -->
+            <div class="dashboard" id="panel-emotion">
+                <h3 style="color: var(--text-secondary); margin-bottom: 16px;">Live Emotion Breakdown</h3>
                 <canvas id="emotionChart"></canvas>
-                <button id="reset-btn" onclick="resetChart()">Reset Data</button>
+                <div class="action-row">
+                    <button class="action-btn" onclick="resetEmotionChart()">Reset Data</button>
+                </div>
+            </div>
+
+            <!-- Study Panel -->
+            <div class="dashboard" id="panel-study" style="display: none;">
+                <h3 style="color: var(--text-secondary); margin-bottom: 16px;">Focus & Productivity</h3>
+                <div class="stat-grid">
+                    <div class="stat-box"><span>Current State</span><strong id="study-status">Scanning</strong></div>
+                    <div class="stat-box"><span>Posture</span><strong id="study-posture">Good</strong></div>
+                    <div class="stat-box"><span>Focus Score</span><strong id="study-score">100%</strong></div>
+                    <div class="stat-box"><span>Focused Time</span><strong id="study-focused">0s</strong></div>
+                    <div class="stat-box"><span>Distracted / Drowsy</span><strong id="study-unfocused">0s</strong></div>
+                    <div class="stat-box"><span>Slouch Incidents</span><strong id="study-slouch">0</strong></div>
+                </div>
+                
+                <canvas id="studyChart"></canvas>
+
+                <!-- 15-Minute Timeline Chart -->
+                <div class="timeline-card">
+                    <span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: bold; display: block; margin-bottom: 8px;">15-MINUTE ROLLING TIMELINE</span>
+                    <canvas id="timelineChart" height="120"></canvas>
+                </div>
+
+                <div class="action-row">
+                    <button class="action-btn secondary" onclick="saveSessionToDb()">Save Session</button>
+                    <a class="action-btn" href="{{ url_for('export_session_pdf') }}">Export PDF</a>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Hidden audio element for streaming Lofi radio -->
+    <audio id="lofi-audio-stream" loop crossorigin="anonymous"></audio>
+
     <script>
+        let currentAppMode = "emotion";
+        let audioCtx = null;
+        let isMuted = false;
+        let volumeGain = 0.3;
+
+        // --- AMBIENT & LOFI ENGINE ---
+        let isAmbientPlaying = false;
+        let ambientGainNode = null;
+        let ambientSourceNode = null;
+        let currentAmbientType = "brown";
+        let ambientVolLevel = 0.25;
+        const lofiStreamEl = document.getElementById('lofi-audio-stream');
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            if (!ambientGainNode && audioCtx) {
+                ambientGainNode = audioCtx.createGain();
+                ambientGainNode.gain.setValueAtTime(ambientVolLevel, audioCtx.currentTime);
+                ambientGainNode.connect(audioCtx.destination);
+            }
+        }
+        document.addEventListener('click', initAudio, { once: false });
+
+        function createBrownNoiseNode() {
+            const bufferSize = audioCtx.sampleRate * 2;
+            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            let lastOut = 0.0;
+            for (let i = 0; i < bufferSize; i++) {
+                const white = Math.random() * 2 - 1;
+                output[i] = (lastOut + (0.02 * white)) / 1.02;
+                lastOut = output[i];
+                output[i] *= 3.5;
+            }
+            const whiteNoise = audioCtx.createBufferSource();
+            whiteNoise.buffer = noiseBuffer;
+            whiteNoise.loop = true;
+            return whiteNoise;
+        }
+
+        function createRainNoiseNode() {
+            const bufferSize = audioCtx.sampleRate * 2;
+            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 0.15 - 0.075;
+            }
+            const rainSource = audioCtx.createBufferSource();
+            rainSource.buffer = noiseBuffer;
+            rainSource.loop = true;
+            return rainSource;
+        }
+
+        function createBinauralNode() {
+            const osc = audioCtx.createOscillator();
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(200, audioCtx.currentTime); // Base Carrier 200Hz
+            return osc;
+        }
+
+        function stopCurrentAmbient() {
+            if (ambientSourceNode) {
+                try {
+                    ambientSourceNode.stop();
+                    ambientSourceNode.disconnect();
+                } catch(e) {}
+                ambientSourceNode = null;
+            }
+            lofiStreamEl.pause();
+            lofiStreamEl.src = "";
+        }
+
+        function playSelectedAmbient() {
+            initAudio();
+            stopCurrentAmbient();
+
+            const type = document.getElementById('ambient-mode-select').value;
+            currentAmbientType = type;
+
+            if (type === "brown") {
+                ambientSourceNode = createBrownNoiseNode();
+                ambientSourceNode.connect(ambientGainNode);
+                ambientSourceNode.start();
+                document.getElementById('audio-status-tag').innerText = "Playing Brown Noise";
+            } else if (type === "rain") {
+                ambientSourceNode = createRainNoiseNode();
+                ambientSourceNode.connect(ambientGainNode);
+                ambientSourceNode.start();
+                document.getElementById('audio-status-tag').innerText = "Playing Rain Noise";
+            } else if (type === "binaural") {
+                ambientSourceNode = createBinauralNode();
+                ambientSourceNode.connect(ambientGainNode);
+                ambientSourceNode.start();
+                document.getElementById('audio-status-tag').innerText = "Playing 40Hz Alpha Wave";
+            } else if (type === "lofi") {
+                // Free public copyright-free chilled lofi stream
+                lofiStreamEl.src = "https://streams.ilovemusic.de/iloveradio17.mp3";
+                lofiStreamEl.volume = ambientVolLevel;
+                lofiStreamEl.play().catch(() => {});
+                document.getElementById('audio-status-tag').innerText = "Streaming Lofi Radio";
+            }
+        }
+
+        function toggleAmbientAudio() {
+            initAudio();
+            isAmbientPlaying = !isAmbientPlaying;
+            const btn = document.getElementById('lofi-toggle-btn');
+            if (isAmbientPlaying) {
+                playSelectedAmbient();
+                btn.innerText = "Pause Music";
+            } else {
+                stopCurrentAmbient();
+                btn.innerText = "Play Music";
+                document.getElementById('audio-status-tag').innerText = "Paused";
+            }
+        }
+
+        function changeAmbientSound(newType) {
+            if (isAmbientPlaying) {
+                playSelectedAmbient();
+            }
+        }
+
+        function updateAmbientVolume(val) {
+            ambientVolLevel = (val / 100) * 0.4;
+            if (ambientGainNode && audioCtx) {
+                ambientGainNode.gain.setValueAtTime(ambientVolLevel, audioCtx.currentTime);
+            }
+            lofiStreamEl.volume = Math.min(1.0, ambientVolLevel * 2.5);
+        }
+
+        // Auto-duck music during drowsiness/posture alarms
+        function duckAmbientForAlarm(duck) {
+            if (!ambientGainNode || !audioCtx) return;
+            if (duck) {
+                ambientGainNode.gain.setValueAtTime(0.02, audioCtx.currentTime);
+                lofiStreamEl.volume = 0.05;
+            } else {
+                ambientGainNode.gain.setValueAtTime(ambientVolLevel, audioCtx.currentTime);
+                lofiStreamEl.volume = Math.min(1.0, ambientVolLevel * 2.5);
+            }
+        }
+
+        function updateAudioVol(val) {
+            volumeGain = (val / 100) * 0.5;
+        }
+
+        function toggleAudioMute() {
+            isMuted = !isMuted;
+            document.getElementById('mute-btn').innerText = isMuted ? "Unmute" : "Mute";
+        }
+
+        function playCustomTone(alertType) {
+            if (isMuted) return;
+            initAudio();
+            if (!audioCtx) return;
+
+            duckAmbientForAlarm(true);
+            setTimeout(() => duckAmbientForAlarm(false), 1200);
+
+            const toneSelection = document.getElementById('tone-select').value;
+            let freq = 880;
+            let duration = 0.35;
+
+            if (alertType === "Posture") {
+                freq = 440;
+                duration = 0.2;
+            } else if (toneSelection === "chime") {
+                freq = 1046.50;
+            } else if (toneSelection === "beep") {
+                freq = 880;
+            } else if (toneSelection === "pulse") {
+                freq = 330;
+                duration = 0.5;
+            }
+
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = toneSelection === "pulse" ? "triangle" : "sine";
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(volumeGain, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (err) {
+                console.error("Audio error:", err);
+            }
+        }
+
+        function switchCameraInput(index) {
+            fetch('/switch_camera', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({index: parseInt(index)})
+            });
+        }
+
+        function saveSessionToDb() {
+            fetch('/save_study_session', { method: 'POST' })
+                .then(r => r.json())
+                .then(data => alert(data.message));
+        }
+
+        let pomoMinutes = 25;
+        let pomoSeconds = 0;
+        let pomoTimer = null;
+        let pomoIsBreak = false;
+
+        function updateClockDisplay() {
+            const m = String(pomoMinutes).padStart(2, '0');
+            const s = String(pomoSeconds).padStart(2, '0');
+            document.getElementById('pomo-clock').innerText = `${m}:${s}`;
+        }
+
+        function togglePomodoro() {
+            initAudio();
+            const btn = document.getElementById('pomo-play-btn');
+            if (pomoTimer) {
+                clearInterval(pomoTimer);
+                pomoTimer = null;
+                btn.innerText = "Resume";
+            } else {
+                btn.innerText = "Pause";
+                pomoTimer = setInterval(() => {
+                    if (pomoSeconds === 0) {
+                        if (pomoMinutes === 0) {
+                            pomoIsBreak = !pomoIsBreak;
+                            pomoMinutes = pomoIsBreak ? 5 : 25;
+                            pomoSeconds = 0;
+                            document.getElementById('pomo-status').innerText = pomoIsBreak ? "BREAK CYCLE (5m)" : "FOCUS CYCLE (25m)";
+                            playCustomTone("Drowsy");
+                        } else {
+                            pomoMinutes--;
+                            pomoSeconds = 59;
+                        }
+                    } else {
+                        pomoSeconds--;
+                    }
+                    updateClockDisplay();
+                }, 1000);
+            }
+        }
+
+        function resetPomodoro() {
+            clearInterval(pomoTimer);
+            pomoTimer = null;
+            pomoIsBreak = false;
+            pomoMinutes = 25;
+            pomoSeconds = 0;
+            document.getElementById('pomo-play-btn').innerText = "Start";
+            document.getElementById('pomo-status').innerText = "FOCUS CYCLE (25m)";
+            updateClockDisplay();
+        }
+
+        function calibratePosture() {
+            fetch('/calibrate_posture', { method: 'POST' });
+        }
+
         document.getElementById('theme-toggle').addEventListener('click', () => {
             const html = document.documentElement;
             html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
         });
-        function updateThreshold(val) {
-            fetch('/set_threshold', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({threshold: val}) });
+
+        function switchMode(mode) {
+            initAudio();
+            currentAppMode = mode;
+            fetch('/set_mode', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({mode: mode})
+            });
+
+            if (mode === "emotion") {
+                document.getElementById('btn-emotion').classList.add('active');
+                document.getElementById('btn-study').classList.remove('active');
+                document.getElementById('panel-emotion').style.display = 'flex';
+                document.getElementById('panel-study').style.display = 'none';
+                document.getElementById('emotion-controls').style.display = 'block';
+                document.getElementById('study-pomo').style.display = 'none';
+                document.getElementById('lofi-player-box').style.display = 'none';
+            } else {
+                document.getElementById('btn-study').classList.add('active');
+                document.getElementById('btn-emotion').classList.remove('active');
+                document.getElementById('panel-study').style.display = 'flex';
+                document.getElementById('panel-emotion').style.display = 'none';
+                document.getElementById('emotion-controls').style.display = 'none';
+                document.getElementById('study-pomo').style.display = 'block';
+                document.getElementById('lofi-player-box').style.display = 'block';
+            }
         }
-        function resetChart() {
+
+        function updateThreshold(val) {
+            fetch('/set_threshold', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({threshold: val})
+            });
+        }
+
+        const ctxEmotion = document.getElementById('emotionChart').getContext('2d');
+        const emotionChart = new Chart(ctxEmotion, {
+            type: 'doughnut',
+            data: {
+                labels: ['Angry', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral'],
+                datasets: [{
+                    data: [0, 0, 0, 0, 0, 0, 0],
+                    backgroundColor: ['#ef4444', '#10b981', '#8b5cf6', '#eab308', '#3b82f6', '#f97316', '#94a3b8'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } }
+            }
+        });
+
+        const ctxStudy = document.getElementById('studyChart').getContext('2d');
+        const studyChart = new Chart(ctxStudy, {
+            type: 'doughnut',
+            data: {
+                labels: ['Focused', 'Distracted', 'Drowsy'],
+                datasets: [{
+                    data: [1, 0, 0],
+                    backgroundColor: ['#10b981', '#f97316', '#ef4444'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } }
+            }
+        });
+
+        const ctxTimeline = document.getElementById('timelineChart').getContext('2d');
+        const timelineChart = new Chart(ctxTimeline, {
+            type: 'line',
+            data: {
+                labels: Array(15).fill(''),
+                datasets: [
+                    {
+                        label: 'Focus %',
+                        data: Array(15).fill(100),
+                        borderColor: '#38bdf8',
+                        backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Slouches',
+                        data: Array(15).fill(0),
+                        borderColor: '#f97316',
+                        tension: 0.3,
+                        borderDash: [5, 5]
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { min: 0, max: 100, ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+                },
+                plugins: { legend: { labels: { color: '#94a3b8', font: { size: 10 } } } }
+            }
+        });
+
+        function resetEmotionChart() {
             fetch('/reset_data', { method: 'POST' }).then(() => {
                 emotionChart.data.datasets[0].data = [0, 0, 0, 0, 0, 0, 0];
                 emotionChart.update();
             });
         }
-        const ctx = document.getElementById('emotionChart').getContext('2d');
-        const emotionChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Angry', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral'],
-                datasets: [{ data: [0, 0, 0, 0, 0, 0, 0], backgroundColor: ['#ef4444', '#10b981', '#8b5cf6', '#eab308', '#3b82f6', '#f97316', '#94a3b8'], borderWidth: 0 }]
-            },
-            options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } } }
-        });
+
         setInterval(() => {
-            fetch('/emotion_data').then(r => r.json()).then(data => {
-                const total = Object.values(data).reduce((a, b) => a + b, 0);
-                if (total > 0) {
-                    emotionChart.data.datasets[0].data = [data.Angry, data.Disgust, data.Fear, data.Happy, data.Sad, data.Surprise, data.Neutral];
-                    emotionChart.update();
-                }
-            }).catch(() => {});
-        }, 2000);
+            if (currentAppMode === "emotion") {
+                fetch('/emotion_data')
+                    .then(r => r.json())
+                    .then(data => {
+                        const total = Object.values(data).reduce((a, b) => a + b, 0);
+                        if (total > 0) {
+                            emotionChart.data.datasets[0].data = [
+                                data.Angry, data.Disgust, data.Fear, data.Happy, data.Sad, data.Surprise, data.Neutral
+                            ];
+                            emotionChart.update();
+                        }
+                    }).catch(() => {});
+            } else if (currentAppMode === "study") {
+                fetch('/study_data')
+                    .then(r => r.json())
+                    .then(data => {
+                        document.getElementById('study-status').innerText = data.status;
+                        document.getElementById('study-posture').innerText = data.posture;
+                        document.getElementById('study-score').innerText = data.score + "%";
+                        document.getElementById('study-focused').innerText = data.focused + "s";
+                        document.getElementById('study-unfocused').innerText = (data.distracted + data.drowsy) + "s";
+                        document.getElementById('study-slouch').innerText = data.slouch_events;
+
+                        studyChart.data.datasets[0].data = [data.focused || 1, data.distracted, data.drowsy];
+                        studyChart.update();
+
+                        if (data.timeline && data.timeline.length > 0) {
+                            timelineChart.data.labels = data.timeline.map(t => t.time);
+                            timelineChart.data.datasets[0].data = data.timeline.map(t => t.score);
+                            timelineChart.data.datasets[1].data = data.timeline.map(t => t.slouch);
+                            timelineChart.update();
+                        }
+
+                        if (data.alert) {
+                            playCustomTone(data.alert_reason);
+                        }
+                    }).catch(() => {});
+            }
+        }, 1500);
     </script>
 </body>
 </html>
