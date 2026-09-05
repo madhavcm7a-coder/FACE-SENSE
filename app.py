@@ -1,11 +1,22 @@
 import io
+import os
+from pathlib import Path
+import tempfile
 import time
 import datetime
 import sqlite3
-import cv2
 from flask import Flask, Response, render_template, jsonify, request, session, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
-from deepface import DeepFace
+
+try:
+    import cv2
+except ImportError:
+    cv2 = None
+
+try:
+    from deepface import DeepFace
+except ImportError:
+    DeepFace = None
 
 # ReportLab imports for PDF generation
 from reportlab.lib.pagesizes import letter
@@ -14,9 +25,13 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
 app = Flask(__name__)
-app.secret_key = "secure_production_secret_key_8821"
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-only-change-this-secret")
 
-DB_FILE = "facesense.db"
+DB_FILE = str(
+    Path(tempfile.gettempdir()) / "facesense.db"
+    if os.environ.get("VERCEL")
+    else Path("facesense.db")
+)
 
 # --- DATABASE SETUP ---
 def get_db():
@@ -60,11 +75,11 @@ init_db()
 
 # --- HARDWARE CAMERA STATE ---
 current_camera_index = 0
-camera = cv2.VideoCapture(current_camera_index)
-clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+camera = None if os.environ.get("VERCEL") or cv2 is None else cv2.VideoCapture(current_camera_index)
+clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8)) if cv2 else None
 
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_eye.xml")
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml") if cv2 else None
+eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_eye.xml") if cv2 else None
 
 current_mode = "emotion"
 frame_counter = 0
@@ -141,6 +156,8 @@ def generate_frames():
         if current_mode == "emotion":
             if frame_counter % 10 == 0:
                 try:
+                    if DeepFace is None:
+                        raise RuntimeError("DeepFace is not installed")
                     result = DeepFace.analyze(
                         enhanced_frame, actions=["emotion"], detector_backend="opencv", enforce_detection=True
                     )
@@ -305,12 +322,16 @@ def index():
 def video_feed():
     if not session.get("logged_in"):
         return "Unauthorized", 401
+    if camera is None or cv2 is None:
+        return jsonify({"status": "unavailable", "message": "Camera streaming is available only when running locally."}), 503
     return Response(generate_frames(), mimetype="multipart/x-mixed-replace; boundary=frame")
 
 
 @app.route("/switch_camera", methods=["POST"])
 def switch_camera():
     global camera, current_camera_index
+    if cv2 is None or os.environ.get("VERCEL"):
+        return jsonify({"status": "unavailable", "message": "Camera switching is available only when running locally."}), 503
     new_index = int(request.json.get("index", 0))
     if new_index != current_camera_index:
         if camera is not None:

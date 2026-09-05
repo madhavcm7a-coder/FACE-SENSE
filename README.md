@@ -39,10 +39,22 @@ For Hardware:
 ### Implementation
 For Software:
 # Installation
-[commands]
+```bash
+python -m venv venv
+venv\\Scripts\\activate
+pip install -r requirements.txt
+```
 
 # Run
-[commands]
+```bash
+python app.py
+```
+
+## Deploy to Vercel
+
+Import this repository into Vercel. The included `vercel.json` exposes `app.py` as the Python function entry point. Set `FLASK_SECRET_KEY` in the Vercel project environment variables before deploying.
+
+Vercel functions do not have access to a server webcam, and their filesystem is ephemeral. The dashboard and authentication routes deploy, while camera streaming and DeepFace analysis remain available when running locally. Session records created on Vercel are stored only in the temporary function filesystem; use a hosted database for persistence in production.
 
 ### Project Documentation
 For Software:
