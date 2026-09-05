@@ -10,18 +10,18 @@
 
 
 ### Team Members
-- Team Lead: [Name] - [College]
-- Member 2: [Name] - [College]
+- Team Lead: [navaneeth] - [sahrdaya college of advance studies]
+- Member 2: [madhav CM] - [sahrdaya college of advance studies]
 - Member 3: [Name] - [College]
 
 ### Project Description
-[2-3 lines about what your project does]
+[A satirical, AI-powered productivity web application that uses real-time computer vision to monitor your study habits, enforce perfect posture, and shame you into focusing. Built as a tongue-in-cheek "digital overlord," the app gamifies the studying experience by tracking your physical compliance and rewarding you with "Acceptable Robot Citizen" status—or punishing you with loud alarms for "Failures of Discipline."]
 
 ### The Problem (that doesn't exist)
-[What ridiculous problem are you solving?]
+[The horrifying realization that people occasionally relax while sitting at their personal computers in the privacy of their own homes. The human spine naturally curves, and eyes occasionally close. This terrifying lack of rigid, robotic discipline during study sessions is completely unacceptable and must be eradicated at all costs.]
 
 ### The Solution (that nobody asked for)
-[How are you solving it? Keep it fun!]
+[A surveillance state built right into your browser. Face Sense Pro watches you constantly through your webcam and aggressively shames you if you slouch or blink too slowly. If it detects a "Failure of Discipline," it immediately mutes your relaxing lofi study beats just to blast a jarring alarm in your ear. It logs your physical compliance in a permanent database and generates a downloadable "Proof of Inefficiency Certificate" (PDF) to formally document your failures as an acceptable robot citizen.]
 
 ## Technical Details
 ### Technologies/Components Used
