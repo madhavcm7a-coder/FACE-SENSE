@@ -349,13 +349,11 @@
                 <div class="video-card"><img src="{{ url_for('video_feed') }}" alt="Live Camera Feed" /></div>
                 
                 <div class="controls">
-                    <!-- Emotion Slider -->
                     <div id="emotion-controls">
                         <label for="threshold">Confidence Threshold: <span id="threshold-val">0%</span></label>
                         <input type="range" id="threshold" min="0" max="100" value="0" onchange="updateThreshold(this.value)" oninput="document.getElementById('threshold-val').innerText = this.value + '%'">
                     </div>
 
-                    <!-- Alert Audio Control Bar -->
                     <div class="audio-bar">
                         <label style="margin: 0;">Alert Tone:</label>
                         <select id="tone-select">
@@ -369,7 +367,6 @@
                     </div>
                 </div>
 
-                <!-- IDEA 4: Study Beats & Ambient Noise Player -->
                 <div class="lofi-card" id="lofi-player-box" style="display: none;">
                     <label>🎧 Focus Audio & Lofi Atmosphere <span id="audio-status-tag" style="color: var(--accent); font-weight: normal;">Idle</span></label>
                     <div class="lofi-controls">
@@ -408,35 +405,33 @@
                 </div>
             </div>
 
-            <!-- Study Panel -->
+            <!-- Satirical Study Panel -->
             <div class="dashboard" id="panel-study" style="display: none;">
-                <h3 style="color: var(--text-secondary); margin-bottom: 16px;">Focus & Productivity</h3>
+                <h3 style="color: var(--text-secondary); margin-bottom: 16px;">Discipline Surveillance</h3>
                 <div class="stat-grid">
                     <div class="stat-box"><span>Current State</span><strong id="study-status">Scanning</strong></div>
-                    <div class="stat-box"><span>Posture</span><strong id="study-posture">Good</strong></div>
-                    <div class="stat-box"><span>Focus Score</span><strong id="study-score">100%</strong></div>
-                    <div class="stat-box"><span>Focused Time</span><strong id="study-focused">0s</strong></div>
+                    <div class="stat-box"><span>Citizenship Status</span><strong id="study-posture">Acceptable Robot Citizen</strong></div>
+                    <div class="stat-box"><span>Compliance Score</span><strong id="study-score">100%</strong></div>
+                    <div class="stat-box"><span>Acceptable Time</span><strong id="study-focused">0s</strong></div>
                     <div class="stat-box"><span>Distracted / Drowsy</span><strong id="study-unfocused">0s</strong></div>
-                    <div class="stat-box"><span>Slouch Incidents</span><strong id="study-slouch">0</strong></div>
+                    <div class="stat-box"><span>Failures of Discipline</span><strong id="study-slouch">0</strong></div>
                 </div>
                 
                 <canvas id="studyChart"></canvas>
 
-                <!-- 15-Minute Timeline Chart -->
                 <div class="timeline-card">
-                    <span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: bold; display: block; margin-bottom: 8px;">15-MINUTE ROLLING TIMELINE</span>
+                    <span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: bold; display: block; margin-bottom: 8px;">15-MINUTE VIOLATION TIMELINE</span>
                     <canvas id="timelineChart" height="120"></canvas>
                 </div>
 
                 <div class="action-row">
-                    <button class="action-btn secondary" onclick="saveSessionToDb()">Save Session</button>
-                    <a class="action-btn" href="{{ url_for('export_session_pdf') }}">Export PDF</a>
+                    <button class="action-btn secondary" onclick="saveSessionToDb()">Log Offense</button>
+                    <a class="action-btn" href="{{ url_for('export_session_pdf') }}">Proof of Inefficiency Certificate</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Hidden audio element for streaming Lofi radio -->
     <audio id="lofi-audio-stream" loop crossorigin="anonymous"></audio>
 
     <script>
@@ -445,7 +440,6 @@
         let isMuted = false;
         let volumeGain = 0.3;
 
-        // --- AMBIENT & LOFI ENGINE ---
         let isAmbientPlaying = false;
         let ambientGainNode = null;
         let ambientSourceNode = null;
@@ -501,7 +495,7 @@
         function createBinauralNode() {
             const osc = audioCtx.createOscillator();
             osc.type = "sine";
-            osc.frequency.setValueAtTime(200, audioCtx.currentTime); // Base Carrier 200Hz
+            osc.frequency.setValueAtTime(200, audioCtx.currentTime);
             return osc;
         }
 
@@ -540,7 +534,6 @@
                 ambientSourceNode.start();
                 document.getElementById('audio-status-tag').innerText = "Playing 40Hz Alpha Wave";
             } else if (type === "lofi") {
-                // Free public copyright-free chilled lofi stream
                 lofiStreamEl.src = "https://streams.ilovemusic.de/iloveradio17.mp3";
                 lofiStreamEl.volume = ambientVolLevel;
                 lofiStreamEl.play().catch(() => {});
@@ -576,7 +569,6 @@
             lofiStreamEl.volume = Math.min(1.0, ambientVolLevel * 2.5);
         }
 
-        // Auto-duck music during drowsiness/posture alarms
         function duckAmbientForAlarm(duck) {
             if (!ambientGainNode || !audioCtx) return;
             if (duck) {
@@ -788,7 +780,7 @@
                 labels: Array(15).fill(''),
                 datasets: [
                     {
-                        label: 'Focus %',
+                        label: 'Compliance %',
                         data: Array(15).fill(100),
                         borderColor: '#38bdf8',
                         backgroundColor: 'rgba(56, 189, 248, 0.1)',
@@ -796,7 +788,7 @@
                         fill: true
                     },
                     {
-                        label: 'Slouches',
+                        label: 'Violations',
                         data: Array(15).fill(0),
                         borderColor: '#f97316',
                         tension: 0.3,
