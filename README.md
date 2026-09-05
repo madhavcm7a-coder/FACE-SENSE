@@ -2,11 +2,11 @@
 
 
 
-# [Project Name] 🎯
+# [FACE SENSE] 🎯
 
 
 ## Basic Details
-### Team Name: [Name]
+### Team Name: [THEKKAN CREW]
 
 
 ### Team Members
@@ -26,10 +26,10 @@
 ## Technical Details
 ### Technologies/Components Used
 For Software:
-- [Languages used]
+- [CSS,PYTHON,HTML]
 - [Frameworks used]
 - [Libraries used]
-- [Tools used]
+- [VS CODE]
 
 For Hardware:
 - [List main components]
